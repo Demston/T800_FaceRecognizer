@@ -124,7 +124,7 @@ def add_face_from_existing_photos(photo_folder: str, photo_id: int):  # Прик
                 print(f"На фото {photo_file} не найдено лиц")
                 continue
 
-            # Берём первое найденное лицо (предполагаем, что это вы)
+            # Берём первое найденное лицо
             for (x, y, w, h) in faces[:1]:  # Берём только первое лицо
                 # Сохраняем только лицо
                 face_roi = gray[y:y + h, x:x + w]
@@ -216,7 +216,7 @@ def load_existing_dataset():
     return faces, ids
 
 
-# 8. Добавляет нового человека к существующей модели
+# 8. Добавляение нового человека к существующей модели
 def add_new_person(photo_folder: str):
     """Добавить нового человека к существующей модели"""
     global names
@@ -350,9 +350,9 @@ def load_video(save_output=False):
         font = cv2.FONT_HERSHEY_SIMPLEX
         # Для большей серьёзности добавим нашему Т800 надпись "Идентификация"
         cv2.putText(overlay, 'IDENTIFICATION', (50, 100), font, 2, (255, 250, 250), 3, cv2.LINE_AA)
-        alpha = 0.7
-        beta = 0.3
-        gamma = 0  # Смещение яркости
+        alpha = 0.7     # Прозрачность оригинала
+        beta = 0.3      # Прозрачность оверлея
+        gamma = 0       # Смещение яркости
         result = cv2.addWeighted(frame, alpha, overlay, beta, gamma)  # Кадр на выходе
 
         if video_writer is not None:

@@ -81,7 +81,7 @@ def add_face_to_dataset():
 
 
 # 5.2 Функция для добавления лиц в базу из готовых фото
-def add_face_from_existing_photos(photo_folder: str, photo_id: int):  # Прикрутить в цикл по папкам!!!
+def add_face_from_existing_photos(photo_folder: str, photo_id: int):
     """
     Загружает готовые фото из папки вместо съёмки с камеры
     photo_folder - папка с фотографиями (jpg/png)

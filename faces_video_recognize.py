@@ -1,4 +1,4 @@
-"""Программа для детекции и распознавания лиц на видео (Terminator-Style)"""
+"""Program for detecting and recognizing faces in video (Terminator-Style)"""
 
 import cv2
 import numpy as np
@@ -8,37 +8,37 @@ from PIL import Image
 from faces_video_config import *
 from datetime import datetime
 
-print('\nПривет! Я программа по распознаванию лиц на видео.\n')
+print('\nHi! I am a facial recognition program.\n') # Hellow
 
 
-# 1. Инициализация детектора лиц (используем каскад Хаара)
+# 1. Initializing the face detector (using a Haar cascade)
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 
-# 2. Создаём распознаватель лиц (LBPH)
+# 2. Building a Face Recognizer (LBPH)
 recognizer = cv2.face.LBPHFaceRecognizer.create()
 
 
-# 3. Словарь для соответствия ID и имени. Заполняем из файла
+# 3. Dictionary for ID and name mapping. Populated from a file.
 with open(NAMES_FILE, 'r', encoding='utf-8') as f:
-    # Читаем содержимое файла и превращаем строку в словарь
+    # Read the contents of the file and convert the string into a dictionary
     names = ast.literal_eval(f.read())
 
 
-# 4. Путь к датасету
+# 4. Path to the dataset
 if not os.path.exists(DATASET_PATH):
     os.makedirs(DATASET_PATH)
 
 
-# 5.1 Функция для добавления лица в базу по фото с камеры
+# 5.1 A function for adding a face to the database using a photo from a camera
 def add_face_to_dataset():
-    """Добавления моего лица в базу по фото с веб-камеры"""
-    face_id = 1  # ID для вашего лица
+    """Adding my face to the database using a webcam photo"""
+    face_id = 1  # ID for your faces
     count = 0
 
-    cap = cv2.VideoCapture(0)  # Веб-камера
-    print("Создание датасета. Смотрите в камеру...")
-    print("Собираю 30 образцов вашего лица...")
+    cap = cv2.VideoCapture(0)  # Web camera
+    print("Creating a dataset. Look into the camera...")
+    print("I'm collecting 30 samples of your face...")
 
     while count < 30:
         ret, frame = cap.read()
@@ -47,151 +47,151 @@ def add_face_to_dataset():
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Детектируем лица
+        # Detecting faces
         faces = face_cascade.detectMultiScale(gray, gray, **DETECTION_PARAMS['photo'])
 
         for (x, y, w, h) in faces:
-            # Рисуем прямоугольник
+            # Draw a rectangle
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-            # Сохраняем только лицо
+            # We only save face
             face_roi = gray[y:y + h, x:x + w]
 
-            # Увеличиваем лицо до стандартного размера
+            # Enlarging the face to standard size
             face_resized = cv2.resize(face_roi, (200, 200))
 
-            # Сохраняем в датасет
+            # Save to dataset
             count += 1
             cv2.imwrite(f"{DATASET_PATH}/User.{face_id}.{count}.jpg", face_resized)
-            print(f"Сохранён образец {count}/30")
+            print(f"Sample saved {count}/30")
 
-        # Показываем процесс
+        # Show the process
         cv2.imshow('Добавление лица в базу', frame)
 
-        # Задержка для сбора разных ракурсов
+        # Delay to collect different angles
         if cv2.waitKey(100) & 0xFF == ord('q'):
             break
 
     cap.release()
     cv2.destroyAllWindows()
-    print("Датасет создан!")
+    print("The dataset has been created!")
 
-    # Обучаем модель
+    # Training the model
     train_recognizer()
 
 
-# 5.2 Функция для добавления лиц в базу из готовых фото
+# 5.2 A function for adding faces to a database from existing photos
 def add_face_from_existing_photos(photo_folder: str, photo_id: int):
     """
-    Загружает готовые фото из папки вместо съёмки с камеры
-    photo_folder - папка с фотографиями (jpg/png)
+    Loads ready-made photos from a folder instead of taking them
+    from the camera photo folder - a folder with photos (jpg/png)
     """
     face_id = photo_id  # ID лица
 
     if not os.path.exists(photo_folder):
-        print(f"Ошибка: папка '{photo_folder}' не найдена!")
-        print(f"Создайте папку '{photo_folder}' и добавьте туда фотографии")
+        print(f"Error: folder '{photo_folder}' not found!")
+        print(f"Create folder '{photo_folder}' and add photos there")
         return
 
-    # Получаем список фото
+    # Getting a list of photos
     photo_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
     photo_files = [f for f in os.listdir(photo_folder)
                    if os.path.splitext(f)[1].lower() in photo_extensions]
 
     if not photo_files:
-        print(f"В папке '{photo_folder}' нет изображений!")
+        print(f"In folder '{photo_folder}' no images!")
         return
 
-    print(f"Найдено {len(photo_files)} фото. Обрабатываю...")
+    print(f"Found {len(photo_files)} photos. Processing...")
 
     count = 0
     for i, photo_file in enumerate(photo_files):
         photo_path = os.path.join(photo_folder, photo_file)
 
         try:
-            # Загружаем фото
+            # Load photos
             img = cv2.imread(photo_path)
             if img is None:
-                print(f"Не могу загрузить: {photo_file}")
+                print(f"Can't load: {photo_file}")
                 continue
 
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-            # Детектируем лица на фото
+            # Detecting faces in photos
             faces = face_cascade.detectMultiScale(gray, **DETECTION_PARAMS['photo'])
 
             if len(faces) == 0:
-                print(f"На фото {photo_file} не найдено лиц")
+                print(f"No faces in the photo {photo_file}")
                 continue
 
-            # Берём первое найденное лицо
+            # Take the first face found
             for (x, y, w, h) in faces[:1]:  # Берём только первое лицо
-                # Сохраняем только лицо
+                # Only save face
                 face_roi = gray[y:y + h, x:x + w]
 
-                # Увеличиваем лицо до стандартного размера
+                # Enlarging the face to standard size
                 face_resized = cv2.resize(face_roi, (200, 200))
 
-                # Сохраняем в датасет
+                # Save to dataset
                 count += 1
                 cv2.imwrite(f"{DATASET_PATH}/User.{face_id}.{count}.jpg", face_resized)
-                print(f"Обработано фото {i + 1}/{len(photo_files)}: сохранено лицо {count}")
+                print(f"Photo {i + 1}/{len(photo_files)}: face saved {count}")
 
-                # Показываем найденное лицо (опционально)
+                # Show the found face (optional)
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.imshow(f"Найдено лицо в {photo_file}", img)
-                cv2.waitKey(500)  # Показываем 0.5 секунды
-                cv2.destroyWindow(f"Найдено лицо в {photo_file}")
+                cv2.imshow(f"Face found in {photo_file}", img)
+                cv2.waitKey(500)  # Showing 0.5 seconds
+                cv2.destroyWindow(f"Face found in {photo_file}")
 
         except Exception as e:
-            print(f"Ошибка при обработке {photo_file}: {e}")
+            print(f"Error while processing {photo_file}: {e}")
             continue
 
     cv2.destroyAllWindows()
-    print(f"Датасет создан! Сохранено {count} образцов лица.")
+    print(f"Dataset created! {count} face samples saved.")
 
-    return count  # Возвращаем количество добавленных образцов
+    return count  # Return the number of samples added
 
 
-# 6. Функция обучения модели
+# 6. Model training function
 def train_recognizer():
-    """Функция обучения модели"""
+    """Model training function"""
     faces = []
     ids = []
 
-    # Проверяем, есть ли файлы в датасете
+    # Checking if there are files in the dataset
     image_files = [f for f in os.listdir(DATASET_PATH) if f.endswith('.jpg')]
 
     if not image_files:
-        print("Нет изображений в датасете!")
+        print("There are no images in the dataset!")
         return
 
     for image_name in image_files:
         try:
-            # Извлекаем ID из имени файла (формат: User.id.number.jpg)
+            # Extracting ID from file name (format: User.id.number.jpg)
             face_id = int(image_name.split('.')[1])
             img_path = os.path.join(DATASET_PATH, image_name)
 
-            # Загружаем и конвертируем изображение
+            # Extracting ID from file name
             img = Image.open(img_path).convert('L')  # 'L' - grayscale
             img_np = np.array(img, 'uint8')
 
             faces.append(img_np)
             ids.append(face_id)
         except Exception as e:
-            print(f"Ошибка при обработке {image_name}: {e}")
+            print(f"Error while processing {image_name}: {e}")
 
     if faces:
         recognizer.train(faces, np.array(ids))
         recognizer.write(MODEL_FILE)
-        print(f"Модель обучена на {len(faces)} образцах!")
+        print(f"The model is trained on {len(faces)} samples.!")
     else:
-        print("Нет данных для обучения!")
+        print("No data for training!")
 
 
-# 7. Загрузка данных для обучения
+# 7. Loading training data
 def load_existing_dataset():
-    """Загружает существующие данные из датасета для дообучения"""
+    """Loads existing data from the dataset for additional training"""
     faces = []
     ids = []
 
@@ -216,41 +216,41 @@ def load_existing_dataset():
     return faces, ids
 
 
-# 8. Добавляение нового человека к существующей модели
+# 8. Adding a new person to an existing model
 def add_new_person(photo_folder: str):
-    """Добавить нового человека к существующей модели"""
+    """Add a new person to an existing model"""
     global names
 
     name = photo_folder.split('_')[1]
 
-    # Находим максимальный ID
+    # Finding the maximum ID
     max_id = max(names.keys())
     new_id = max_id + 1
 
-    # Добавляем в словарь
+    # Add to dictionary
     names[new_id] = name
 
-    # Добавляем фото
+    # Adding a photo
     samples = add_face_from_existing_photos(photo_folder, new_id)
 
     if samples > 0:
-        # Дозаучиваем модель (LBPH поддерживает дообучение)
+        # Retraining the model (LBPH supports retraining)
         faces, ids = load_existing_dataset()
         recognizer.update(faces, np.array(ids))
         recognizer.write(MODEL_FILE)
 
-        # Сохраняем обновлённый словарь
+        # Saving the updated dictionary
         with open(NAMES_FILE, 'w', encoding='utf-8') as f:
             f.write(str(names))
 
-        print(f"Добавлен новый человек: {name} (ID: {new_id})\n")
+        print(f"New person added: {name} (ID: {new_id})\n")
         main()
 
 
-# 9. Загружается видео и распознаются лица на нём
+# 9. The video is loaded and faces are recognized in it.
 def load_video(save_output=False):
-    """Загружается видео и распознаются лица на нём"""
-    video_file = input('Введите имя mp4-файла (без расширения) для обработки: ') + '.mp4'
+    """The video is loaded and faces are recognized in it."""
+    video_file = input('Enter the name of the mp4 file (without extension) to process: ') + '.mp4'
     video = cv2.VideoCapture(video_file)
     video_writer = None
     if save_output:
@@ -261,15 +261,15 @@ def load_video(save_output=False):
         output_file = f"recognized_{timestamp}.mp4"
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         video_writer = cv2.VideoWriter(output_file, fourcc, fps, (frame_width, frame_height))
-        print(f"Сохранение результата в: {output_file}")
+        print(f"Saving the result in: {output_file}")
 
     if not video.isOpened():
-        print("Ошибка: не могу открыть видео файл!")
+        print("Error: I can't open the video file!")
         return
 
-    # Счётчик кадров для обработки не каждого кадра (оптимизация)
+    # Frame counter for processing not every frame (optimization)
     frame_counter = 0
-    # 1 - Обычный режим. Если 2, то обрабатываем каждый 3-й кадр. Оптимизация!
+    # 1 - Normal mode. If 2, then we process every 3rd frame. Optimization!
     if save_output:
         skip_frames = 1
     else:
@@ -282,124 +282,124 @@ def load_video(save_output=False):
 
         frame_counter += 1
         if not save_output:
-            # Ниже идёт пропуск кадров. Для оптимизации, если не нужно сохранять - убрать!
+            # Below is the frame skipping. For optimization purposes, if you don't need to save it, remove it!
             if frame_counter % skip_frames != 0:
-                continue  # Пропускаем кадр
+                continue  # Skipping a frame
 
         gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Детекция лиц
+        # Face detection
         faces = face_cascade.detectMultiScale(gray_image, **DETECTION_PARAMS['video'])
 
         for (x, y, w, h) in faces:
-            # Выделяем область лица
+            # Select the face area
             roi_gray = gray_image[y:y + h, x:x + w]
 
-            # Распознаём (только если модель обучена)
+            # Recognize (only if the model is trained)
             if os.path.exists(MODEL_FILE):
                 try:
                     id, confidence = recognizer.predict(roi_gray)
 
-                    # Динамический порог в зависимости от освещения
-                    threshold = 80  # Базовый порог
+                    # Dynamic threshold depending on lighting
+                    threshold = 80  # Basic threshold
 
                     if confidence < threshold:
                         name = names.get(id, "Unknown")
-                        color = (255, 250, 250)  # Белый
+                        color = (255, 250, 250)  # White
 
-                        # Меняем цвет в зависимости от уверенности
-                        if confidence > threshold * 0.7:  # 70% от порога
-                            color = (255, 250, 250)  # Белый
+                        # Change color depending on confidence
+                        if confidence > threshold * 0.7:  # 70% of the threshold
+                            color = (255, 250, 250)  # White
                     else:
                         name = "Unknown"
-                        color = (0, 0, 255)  # Красный
+                        color = (0, 0, 255)  # Red
 
-                    # Форматируем текст
+                    # Formatting the text
                     if name == "Unknown":
                         text = f"{name} ({confidence:.0f})"
                     else:
                         text = f"{name}"
 
                 except Exception as e:
-                    print(f"Ошибка предсказания: {e}")
-                    continue  # Пропускаем это лицо
+                    print(f"Prediction error: {e}")
+                    continue  # Let's skip this face
             else:
-                name = "Детекция"
-                color = (128, 128, 128)  # Серый - только детекция
+                name = "Detection"
+                color = (128, 128, 128)  # Gray - detection only
                 text = name
 
             thickness = 2
             if name != "Unknown":
-                thickness = 3  # Более толстая рамка для распознанных
+                thickness = 3  # Thicker frame for recognized
 
-            # Рисуем прямоугольник
+            # Draw a rectangle
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, thickness)
 
-            # Рисуем фон для текста с градиентом
+            # Drawing a gradient background for text
             overlay = frame.copy()
             cv2.rectangle(overlay, (x, y - 35), (x + w, y), color, -1)
             cv2.addWeighted(overlay, 0.3, frame, 0.7, 0, frame)
 
-            # Добавляем текст
+            # Adding text
             cv2.putText(frame, text, (x + 5, y - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 250, 250), 2)
 
-        # Добавим красный полупрозрачный фон в духе зрения терминатора
+        # Let's add a red translucent background in the spirit of the Terminator's vision
         overlay = frame.copy()
-        overlay[:] = (0, 0, 255)  # Красный
+        overlay[:] = (0, 0, 255)  # Red
         font = cv2.FONT_HERSHEY_SIMPLEX
-        # Для большей серьёзности добавим нашему Т800 надпись "Идентификация"
+        # To make it look more serious, let's add the inscription "Identification" to our T800.
         cv2.putText(overlay, 'IDENTIFICATION', (50, 100), font, 2, (255, 250, 250), 3, cv2.LINE_AA)
-        alpha = 0.7     # Прозрачность оригинала
-        beta = 0.3      # Прозрачность оверлея
-        gamma = 0       # Смещение яркости
-        result = cv2.addWeighted(frame, alpha, overlay, beta, gamma)  # Кадр на выходе
+        alpha = 0.7     # Transparency of the original
+        beta = 0.3      # Overlay transparency
+        gamma = 0       # Brightness shift
+        result = cv2.addWeighted(frame, alpha, overlay, beta, gamma)  # Frame at the exit
 
         if video_writer is not None:
             video_writer.write(result)
 
-        # Показываем кадр
-        cv2.imshow('Распознавание лиц', result)
+        # Showing a frame
+        cv2.imshow('Facial recognition', result)
 
-        # Выход по 'q'
+        # Exit by 'q'
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
 
     video.release()
     if video_writer is not None:
         video_writer.release()
-        print(f"\nВидео успешно сохранено!")
+        print(f"\nVideo saved successfully!")
     cv2.destroyAllWindows()
 
 
-# 10. Добавим фото для обучения
+# 10. Let's add photos for training
 def add_photo_for_learning():
-    """Добавим фото для обучения"""
+    """Let's add photos for training"""
     global names
 
-    print("Модель не обучена. Сначала нужно добавить лица.")
-    print("1 - Добавить из готовых фото")
-    print("2 - Снять с камеры (если нужно)")
-    print("3 - Только детекция (без распознавания)")
+    print("The model is untrained. We need to add faces first.")
+    print("1 - Add from ready-made photos")
+    print("2 - Remove from camera (if necessary)")
+    print("3 - Detection only (no recognition)")
 
-    response = input("Выберите вариант (1/2/3): ").strip()
+    response = input("Select an option (1/2/3): ").strip()
     print('')
 
     if response == '1':
-        # Используем готовые фото из папки 'photos_****'
-        # Получаем список всех объектов (файлов и папок) в текущей директории
+        # We use ready-made photos from the folder 'photos_****'
+        # We get a list of all objects (files and folders) in the current directory
         folders_with_word_current = []
         for item in os.listdir('.'):
-            # Проверяем, является ли объект папкой и содержит ли имя нужное слово
+            # We check whether the object is a folder and whether the name contains the required word
             if os.path.isdir(item) and TARGET_WORD in item:
                 folders_with_word_current.append(item)
-        names[0] = 'Unknown'  # Добавим нулевой ID для ноунеймов
+        names[0] = 'Unknown'  # Let's add a zero ID for no-names
         for i, item in enumerate(folders_with_word_current):
-            names[i + 1] = item.split('_')[1]  # разбить имя папки на "photos" и имя
+            names[i + 1] = item.split('_')[1]  # split the folder name into "photos" and the name
         with open(NAMES_FILE, 'w', encoding='utf-8') as file:
             names_string = str(names)
             file.write(names_string)
-        # У нас есть словарь с ID и именами, а также папка
+        # We have a dictionary with IDs and names, and a folder
         for index, item in enumerate(folders_with_word_current):
             add_face_from_existing_photos(item, index + 1)
 
@@ -408,66 +408,66 @@ def add_photo_for_learning():
             samples = add_face_from_existing_photos(item, index + 1)
             total_samples += samples
         if total_samples > 0:
-            train_recognizer()  # Обучаем один раз на всех данных
+            train_recognizer()  # We train once on all data
 
     elif response == '2':
-        # Старый способ с камерой (закомментирован, но можно использовать)
-        print("Этот вариант временно недоступен. Используйте вариант 1.")
-        add_face_to_dataset()  # Раскомментируйте, если нужно
-        # add_face_from_existing_photos("photos_dima")  # Используем фото как запасной вариант
+        # Old method with camera (commented, but can be used)
+        print("This option is temporarily unavailable. Please use option 1.")
+        add_face_to_dataset()  # Uncomment if necessary
+        # add_face_from_existing_photos("photos_dima")  # We use photos as a backup option
 
     elif response == '3':
-        print("Работаю только в режиме детекции (без распознавания)")
+        print("I work only in detection mode (without recognition)")
 
     else:
-        print("Команда не распознана")
+        print("Command not recognized")
         add_photo_for_learning()
 
-    # Заполняем словарь из файла
+    # Filling the dictionary from a file
     with open(NAMES_FILE, 'r', encoding='utf-8') as f:
-        # Читаем содержимое файла и превращаем строку в словарь
+        # Read the contents of the file and convert the string into a dictionary
         names = {}
         names = ast.literal_eval(f.read())
 
     load_video()
 
 
-# 11. Основная функция
+# 11. Main function
 def main():
-    """Основная функция. Точка входа."""
+    """Main function. Entry point."""
     global names
 
-    # Проверяем, обучена ли модель
+    # Checking if the model is trained
     if os.path.exists(MODEL_FILE) and os.path.exists(NAMES_FILE):
-        print("Найдена обученная модель. Выберите вариант.")
-        print("1 - Просмотреть видео")
-        print("2 - Сохранить видео")
-        print("3 - Дообучить модель")
-        print("4 - Обучить модель с нуля")
-        use_existing = input("Выберите вариант (1/2/3/4): ")
+        print("A trained model was found. Please select an option.")
+        print("1 - Watch the video")
+        print("2 - Save video")
+        print("3 - Retrain the model")
+        print("4 - Train a model from scratch")
+        use_existing = input("Select an option (1/2/3/4): ")
         print('')
         if use_existing.lower() == '1':
             recognizer.read(MODEL_FILE)
             with open(NAMES_FILE, 'r', encoding='utf-8') as f:
                 names = ast.literal_eval(f.read())
-            print(f"Загружена модель с {len(names) - 1} людьми")
+            print(f"Model loaded with {len(names) - 1} people")
             load_video()
         if use_existing.lower() == '2':
             recognizer.read(MODEL_FILE)
             with open(NAMES_FILE, 'r', encoding='utf-8') as f:
                 names = ast.literal_eval(f.read())
-            print(f"Загружена модель с {len(names) - 1} людьми")
+            print(f"Model loaded with {len(names) - 1} people")
             save_output = True
             load_video(save_output)
         elif use_existing.lower() == '3':
-            add_new_person(input('Введите имя папки: '))
+            add_new_person(input('Enter the folder name: '))
         elif use_existing.lower() == '4':
             add_photo_for_learning()
         else:
-            print("Команда не распознана")
+            print("Command not recognized")
             main()
 
 
-# Запуск программы
+# Launching the program
 if __name__ == "__main__":
     main()

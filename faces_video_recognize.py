@@ -66,7 +66,7 @@ def add_face_to_dataset():
             print(f"Sample saved {count}/30")
 
         # Show the process
-        cv2.imshow('Добавление лица в базу', frame)
+        cv2.imshow('Add faces to dataset', frame)
 
         # Delay to collect different angles
         if cv2.waitKey(100) & 0xFF == ord('q'):
@@ -125,7 +125,7 @@ def add_face_from_existing_photos(photo_folder: str, photo_id: int):
                 continue
 
             # Take the first face found
-            for (x, y, w, h) in faces[:1]:  # Берём только первое лицо
+            for (x, y, w, h) in faces[:1]:  # take only the first person
                 # Only save face
                 face_roi = gray[y:y + h, x:x + w]
 

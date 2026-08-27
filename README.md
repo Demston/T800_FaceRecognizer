@@ -44,5 +44,7 @@ The program has an intuitive console interface. It can detect human faces in vid
     <img src="media/snapshot_00.14.539.png" width="320"/>
     <br><br>
     <p><b>🚀 Демонстрация работы проекта (Кликните для полной версии):</b></p>
-    <a href="https://raw.githubusercontent.com/Demston/T800_FaceRecognizer/main/media/VID_NY_26_Term_Cens.mp4"> <img src="media/snapshot_00.14.539.png" width="450" alt="Смотреть видео демонстрацию"/> </a>
+    <a href="https://raw.githubusercontent.com/Demston/T800_FaceRecognizer/main/media/VID_NY_26_Term_Cens.mp4"> 
+        <img src="media/snapshot_00.14.539.png" width="450" alt="Смотреть видео демонстрацию"/> 
+    </a>
 </div>

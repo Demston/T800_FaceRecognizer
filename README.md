@@ -44,7 +44,7 @@ The program has an intuitive console interface. It can detect human faces in vid
     <img src="media/snapshot_00.14.539.png" width="320"/>
     <br><br>
 
-  <a href="https://fastly.jsdelivr.net/gh/Demston/T800_FaceRecognizer@main/media/VID_NY_26_Term_Cens.mp4" target="_blank">
+  <a href="https://cdn.jsdelivr.net/gh/Demston/T800_FaceRecognizer@main/media/VID_NY_26_Term_Cens.mp4" target="_blank">
     <img src="media/snapshot_00.14.539.png" width="450" alt="Смотреть видео демонстрацию"/>
   </a>
 </div>

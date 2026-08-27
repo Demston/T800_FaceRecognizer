@@ -41,5 +41,5 @@ The program has an intuitive console interface. It can detect human faces in vid
 ---
   
 <div align="center">
-<img src="https://github.com/Demston/T800_FaceRecognizer/blob/main/snapshot_00.14.545.png" width="320"/>
+<img src="https://github.com/Demston/T800_FaceRecognizer/blob/main/media/snapshot_00.14.539.png" width="320"/>
 </div>

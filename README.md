@@ -1,4 +1,4 @@
-# 🎞️ T800 Vision
+# 📺 T800 Vision
 
 [ENGLISH VERSION](#en/us) | [РУССКАЯ ВЕРСИЯ](#ru) | [MEDIA (МЕДИА)](#media)
 
@@ -48,7 +48,7 @@ The program has an intuitive console interface. It can detect human faces in vid
   
 <div align="center">
 
-  📺 **[DOWNLOAD VIDEO](https://raw.githubusercontent.com/Demston/T800_FaceRecognizer/main/media/OpenCV_T800_Cens.mp4)** *(MP4, 23 МБ)*
+  🎞 **[DOWNLOAD VIDEO](https://raw.githubusercontent.com/Demston/T800_FaceRecognizer/main/media/OpenCV_T800_Cens.mp4)** *(MP4, 23 МБ)*
 
   <img src="media/snapshot_00.14.539.png" width="320"/>
  

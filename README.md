@@ -2,7 +2,7 @@
 
 [ENGLISH VERSION](#en/us) | [РУССКАЯ ВЕРСИЯ](#ru) | [MEDIA (МЕДИА)](#media)
 
-## [ENG] Face detection and recognition program (in the style of T800 vision)
+## [EN/US] Face detection and recognition program (in the style of T800 vision)
 
 A personal project exploring the potential of computer vision using OpenCV.
 

@@ -1,3 +1,7 @@
+# 🎞️ T800 Vision
+
+[ENGLISH VERSION](#en/us) | [РУССКАЯ ВЕРСИЯ](#ru) | [MEDIA (МЕДИА)](#media)
+
 ## [ENG] Face detection and recognition program (in the style of T800 vision)
 
 A personal project exploring the potential of computer vision using OpenCV.
@@ -39,6 +43,8 @@ The program has an intuitive console interface. It can detect human faces in vid
 4) Программа позволяет посмотреть обработанное видео без сохранения, либо сохранить его на диск. Обучив модель, и выбрав соответствующий пункт меню для просмотра/сохранения, указываем имя файла *.mp4 для обработки (без расширения) и смотрим результат.  
 
 ---
+
+## MEDIA
   
 <div align="center">
 

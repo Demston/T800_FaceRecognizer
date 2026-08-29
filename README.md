@@ -1,4 +1,4 @@
-# 📺 T800 Vision
+# 🤖 T800 Vision
 
 [ENGLISH VERSION](#en/us) | [РУССКАЯ ВЕРСИЯ](#ru) | [MEDIA (МЕДИА)](#media)
 

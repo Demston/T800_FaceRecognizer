@@ -52,7 +52,7 @@ The program has an intuitive console interface. It can detect human faces in vid
 
   <div align="center">
       <a href="https://youtube.com/shorts/R8-SmH1lceA" target="_blank">
-        <img src="media/snapshot_00.14.539.png" width="600" alt="Watch on YouTube"/>
+        <img src="media/snapshot_00.14.539.png" width="320" alt="Watch on YouTube"/>
       </a>
   </div>
 

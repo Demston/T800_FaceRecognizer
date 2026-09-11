@@ -50,6 +50,12 @@ The program has an intuitive console interface. It can detect human faces in vid
 
   🎞 **[DOWNLOAD VIDEO](https://raw.githubusercontent.com/Demston/T800_FaceRecognizer/main/media/OpenCV_T800_Cens.mp4)** *(MP4, 23 МБ)*
 
-  <img src="media/snapshot_00.14.539.png" width="320"/>
+  <div align="center">
+      <a href="https://youtube.com/shorts/R8-SmH1lceA" target="_blank">
+        <img src="media/snapshot_00.14.539.png" width="600" alt="Watch on YouTube"/>
+      </a>
+  </div>
+
+Watch on YouTube
  
 </div>
